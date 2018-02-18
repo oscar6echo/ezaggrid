@@ -21,20 +21,20 @@ pip install ezaggrid
 
 
 See the demo notebooks
-+ [demo_ezaggrid_aggregation]()
-+ [demo_ezaggrid_clipboard]()
-+ [demo_ezaggrid_column_definition]()
-+ [demo_ezaggrid_column_filter]()
-+ [demo_ezaggrid_column_groups]()
-+ [demo_ezaggrid_column_headers]()
-+ [demo_ezaggrid_column_resize]()
-+ [demo_ezaggrid_column_row_sorting]()
-+ [demo_ezaggrid_export_csv_excel]()
-+ [demo_ezaggrid_pagination]()
-+ [demo_ezaggrid_pivoting]()
-+ [demo_ezaggrid_quickfilter]()
-+ [demo_ezaggrid_status_bar]()
-+ [demo_ezaggrid_tool_panel]()
++ [demo_ezaggrid_aggregation](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_aggregation.ipynb)
++ [demo_ezaggrid_clipboard](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_clipboard.ipynb)
++ [demo_ezaggrid_column_definition](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_definition.ipynb)
++ [demo_ezaggrid_column_filter](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_filter.ipynb)
++ [demo_ezaggrid_column_groups](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_groups.ipynb)
++ [demo_ezaggrid_column_headers](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_headers.ipynb)
++ [demo_ezaggrid_column_resize](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_resize.ipynb)
++ [demo_ezaggrid_column_row_sorting](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_row_sorting.ipynb)
++ [demo_ezaggrid_export_csv_excel](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_export_csv_excel.ipynb)
++ [demo_ezaggrid_pagination](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_pagination.ipynb)
++ [demo_ezaggrid_pivoting](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_pivoting.ipynb)
++ [demo_ezaggrid_quickfilter](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_quickfilter.ipynb)
++ [demo_ezaggrid_status_bar](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_status_bar.ipynb)
++ [demo_ezaggrid_tool_panel](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_tool_panel.ipynb)
 
 ## 2.1 - Input Params
 
