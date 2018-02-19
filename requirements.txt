@@ -1,2 +1,3 @@
 pandas>=0.22
 jinja2>=2.10
+simplejson>=3.13.2
