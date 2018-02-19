@@ -1,5 +1,5 @@
 
-# ag-grid thin wrapper for Jupyter notebook: ezaggrid
+# ezaggrid
 
 **ezaggrid** (meaning 'easy ag-grid') is a Python package thin wrapping the excellent [ag-grid](https://www.ag-grid.com/) JavaScript library.  
 Its goal is to make it ag-grid an easy option for [pandas dataframe](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) rendering in the Jupyter notebook.
