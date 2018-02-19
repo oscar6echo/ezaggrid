@@ -42,5 +42,5 @@ class Template:
 
         self.content = template.render(data=data)
 
-        with open('index.html', 'w') as f:
-            f.write(self.content)
+        # with open('index.html', 'w') as f:
+        #     f.write(self.content)
