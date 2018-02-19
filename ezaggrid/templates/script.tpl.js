@@ -80,7 +80,6 @@
     ], function (agGrid, d3) {
             console.log("start in require");
 
-            // agGrid.LicenseManager.setLicenseKey('{-% include "license" %-}');
             {-% if data.license %-} 
             agGrid.LicenseManager.setLicenseKey(atob('__$data.license$__'));
             {-% endif %-}
