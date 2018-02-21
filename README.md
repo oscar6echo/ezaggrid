@@ -35,6 +35,7 @@ See the demo notebooks
 + [demo_ezaggrid_quickfilter](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_quickfilter.ipynb)
 + [demo_ezaggrid_status_bar](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_status_bar.ipynb)
 + [demo_ezaggrid_tool_panel](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_tool_panel.ipynb)
++ [demo_ezaggrid_multiindex_dataframe](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_multiindex_dataframe.ipynb)
 
 ## 2.2 - Input Params
 
