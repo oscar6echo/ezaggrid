@@ -17,4 +17,5 @@ dump/
 dist/
 
 ezaggrid/templates/license
+ezaggrid/temp.py
 notebooks/demo_explo*

@@ -6,9 +6,7 @@ import pandas as pd
 
 from copy import deepcopy as copy
 
-from .util import json_serial, sanitize_str, sanitize_struct, \
-                  build_css_rules, encode_b64, \
-                  update_columnDefs, update_columnTypes
+from .util import Util
 
 
 class Params:
@@ -23,7 +21,9 @@ class Params:
                  quick_filter=False,
                  export_csv=False,
                  export_excel=False,
-                 std_types=True,
+                 implicit_col_defs=True,
+                 index=True,
+                 keep_multiindex=True,
                  grid_data=None,
                  grid_options=None,
                  license=None,
@@ -41,9 +41,11 @@ class Params:
         self.quick_filter = quick_filter
         self.export_csv = export_csv
         self.export_excel = export_excel
-        self.std_types = std_types
-        self.grid_data = grid_data
-        self.grid_options = grid_options
+        self.implicit_col_defs = implicit_col_defs
+        self.index = index
+        self.keep_multiindex = keep_multiindex,
+        self.grid_data = copy(grid_data)
+        self.grid_options = copy(grid_options)
         self.license = license
 
         # if not self.widthIframe:
@@ -52,24 +54,54 @@ class Params:
         #     isTitle = self.titleText is not None
         #     self.heightIframe = self.height + 30 * isTitle + 50 + 2 * self.borderPx + 5
 
-        if self.std_types:
-            self.grid_options = update_columnDefs(self.grid_data, self.grid_options)
-            self.grid_options = update_columnTypes(self.grid_options)
-
         self.valid = self.check(verbose=verbose)
-        # print('grid_data')
-        self.grid_data_json = self.build(self.grid_data)
+
         # print('grid_options')
-        # print(grid_options)
-        self.grid_options_json = self.build(self.grid_options, sanitize=True)
-        # self.dic_grid_data = self.build(self.grid_data)
-        # self.dic_grid_options = self.build(self.grid_options)
+        # print(self.grid_options)
+
+        if Util.is_multiindex_df(self.grid_data):
+            self.grid_data, self.grid_options = Util.prepare_multiindex_df(self.grid_data,
+                                                                           self.grid_options,
+                                                                           keep_multiindex=keep_multiindex,
+                                                                           verbose=verbose)
+        elif Util.is_df(self.grid_data):
+            self.grid_data = Util.correct_df_col_name(self.grid_data,
+                                                      verbose=verbose)
+            if self.index:
+                self.grid_data = Util.add_index_df(self.grid_data,
+                                                   verbose=verbose)
+
+            if 'columnDefs' in self.grid_options:
+                # print('update')
+                self.grid_options = Util.update_columnDefs(self.grid_data,
+                                                           self.grid_options,
+                                                           verbose=verbose)
+            else:
+                # print('implicit')
+                # colDefs = implicit_columnDefs(self.grid_data,
+                #                               verbose=verbose)
+                # self.grid_options['columnDefs'] = colDefs
+                self.grid_options = Util.implicit_columnDefs(self.grid_data,
+                                                             self.grid_options,
+                                                             verbose=verbose)
+
+        self.grid_options = Util.update_columnTypes(self.grid_options,
+                                                    verbose=verbose)
+
+        # self.grid_data = self.correct_data(self.grid_data, self.index)
+        # print(self.grid_data.head(5))
+
+        # print('grid_options')
+        # print(self.grid_options)
 
         if self.css_rules is not None:
-            self.css_rules = build_css_rules(self.css_rules)
+            self.css_rules = Util.build_css_rules(self.css_rules)
 
         if self.license is not None:
-            self.license = encode_b64(self.license)
+            self.license = Util.encode_b64(self.license)
+
+        self.grid_data_json = Util.build_data(self.grid_data)
+        self.grid_options_json = Util.build_options(self.grid_options)
 
     def check(self, verbose=False):
         """
@@ -88,8 +120,6 @@ class Params:
 
         msg = 'exportExport must be a boolean'
         assert isinstance(self.export_excel, bool), msg
-
-
 
         if self.css_rules is not None:
             msg = 'css_rules must be a string'
@@ -114,24 +144,6 @@ class Params:
             print('data is valid')
 
         return True
-
-    def build(self, data, sanitize=False):
-        """
-        """
-        if data is None:
-            return None
-
-        if isinstance(data, pd.core.frame.DataFrame):
-            data2 = data.to_dict(orient='records')
-        else:
-            data2 = data
-
-        if sanitize:
-            data2 = sanitize_struct(data2)
-            # print(data2)
-
-        data_json = json.dumps(data2, default=json_serial, ignore_nan=True)
-        return data_json
 
     def to_dict(self):
         """

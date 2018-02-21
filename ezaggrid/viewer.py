@@ -19,7 +19,9 @@ class AgGrid:
                  quick_filter=None,
                  export_csv=None,
                  export_excel=None,
-                 std_types=None,
+                 implicit_col_defs=None,
+                 index=None,
+                 keep_multiindex=None,
                  grid_data=None,
                  grid_options=None,
                  license=None,
@@ -33,7 +35,9 @@ class AgGrid:
                'quick_filter': quick_filter,
                'export_csv': export_csv,
                'export_excel': export_excel,
-               'std_types': std_types,
+               'index': index,
+               'keep_multiindex': keep_multiindex,
+               'implicit_col_defs': implicit_col_defs,
                'grid_data': grid_data,
                'grid_options': grid_options,
                'license': license,
@@ -53,3 +57,9 @@ class AgGrid:
         display image tabs
         """
         display(HTML(self.html))
+
+    def export_data(self):
+        return self.params.grid_data
+
+    def export_options(self):
+        return self.params.grid_options

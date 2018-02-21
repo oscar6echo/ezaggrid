@@ -1,4 +1,6 @@
 
 from .viewer import AgGrid
 
-from .util import get_license
+from .util import Util
+
+get_license = Util.get_license
