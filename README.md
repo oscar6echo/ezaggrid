@@ -36,7 +36,7 @@ See the demo notebooks
 + [demo_ezaggrid_status_bar](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_status_bar.ipynb)
 + [demo_ezaggrid_tool_panel](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_tool_panel.ipynb)
 
-## 2.1 - Input Params
+## 2.2 - Input Params
 
 The data must be input as a [pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html).
 
@@ -94,7 +94,7 @@ To display a the data as as ag-grid
 
 ```Python
 # create object
-ag = AgGrid(# dataframe
+ag = AgGrid(# dataframe or list of dict of data items
             grid_data=df_data,
             # dictionary of gridOptions- from ag-grid documentation
             grid_options=grid_options,
@@ -110,8 +110,14 @@ ag = AgGrid(# dataframe
             export_csv=False,
             # export excel button boolean - default=False
             export_excel=False,
-            # automatic formatting of data (text, number, dates) from dataframe - default=True
-            std_types=True,
+            # automatic column definitions from dataframe - default=False
+            implicit_col_defs=False,
+            # add index to data - default=True
+            index=True,
+            # In case of multiindex dataframe and therefore
+            # row and col grouping, display row index as columns
+            # default=False
+            keep_multiindex=False,
             # ag-grid theme - default='ag-theme-fresh'
             theme='ag-theme-fresh',
             # ag-grid license necessary for enterprise features - default=None
@@ -124,7 +130,44 @@ ag = AgGrid(# dataframe
 ag.show()
 ```
 
-### 2.3 - Features
+### 2.2.1 - Automatic type detection
+
+If grid_data is a dataframe, the column types are automatically detected.  
+The following types are associated an ag-grid column type to allow for correct sorting and filtering:
++ numbers, int and floats
++ dates
++ boolean
++ text
+
+This automatic customization is done through the ag-grid gridOptions property `columnDefs`.  
+
+### 2.2.2 - Forbidden characters
+
+*Note*: If a dataframe column contains a dot ('.') it will be automatically converted to an underscore ('_') and a warning message is displayed. Because dots in `field` are [not supported](https://github.com/ag-grid/ag-grid/issues/391) in ag-grid.  
+
+### 2.2.3 - Multi-index dataframes
+
+If a multiindex dataframe is passed as argument, a specific treatment takes place so that a similar diplay is rendered by ag-grid using row and column grouping.  
+
+See the [demo_ezaggrid_multiindex_dataframe](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_multiindex_dataframe.ipynb) demo notebook.
+
+### 2.2.4 - Export data and options
+
+Both the `grid_data` and `grid_options` may be slightly modified upon AgGrid instance creation. To get back their transformed value:
+
+
+```Python
+# export grid_data
+updated_grid_data = ag.export_data()
+
+# export grid_options
+updated_grid_options = ag.export_options()
+```
+
+You might need it to tamper the options further.  
+
+
+## 2.3 - Features
 
 This package is not a [Jupyter widget](https://jupyter.org/widgets). So the displayed ag-grid is ready only ie. no modification of the ag-grid will be visible from the Python kernel. In other words **ezaggrid** is a readonly package.  
 
@@ -186,7 +229,7 @@ The [ag-grid features](https://www.ag-grid.com/javascript-grid-features/) availa
 + License Key
 
 
-### 2.4 - IFrame
+## 2.4 - IFrame
 
 Why the `iframe` option ?
 
