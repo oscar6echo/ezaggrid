@@ -43,7 +43,7 @@ class Params:
         self.export_excel = export_excel
         self.implicit_col_defs = implicit_col_defs
         self.index = index
-        self.keep_multiindex = keep_multiindex,
+        self.keep_multiindex = keep_multiindex
         self.grid_data = copy(grid_data)
         self.grid_options = copy(grid_options)
         self.license = license
@@ -56,43 +56,20 @@ class Params:
 
         self.valid = self.check(verbose=verbose)
 
-        # print('grid_options')
-        # print(self.grid_options)
-
         if Util.is_multiindex_df(self.grid_data):
             self.grid_data, self.grid_options = Util.prepare_multiindex_df(self.grid_data,
                                                                            self.grid_options,
-                                                                           keep_multiindex=keep_multiindex,
+                                                                           index=self.index,
+                                                                           keep_multiindex=self.keep_multiindex,
                                                                            verbose=verbose)
         elif Util.is_df(self.grid_data):
-            self.grid_data = Util.correct_df_col_name(self.grid_data,
-                                                      verbose=verbose)
-            if self.index:
-                self.grid_data = Util.add_index_df(self.grid_data,
-                                                   verbose=verbose)
-
-            if 'columnDefs' in self.grid_options:
-                # print('update')
-                self.grid_options = Util.update_columnDefs(self.grid_data,
-                                                           self.grid_options,
-                                                           verbose=verbose)
-            else:
-                # print('implicit')
-                # colDefs = implicit_columnDefs(self.grid_data,
-                #                               verbose=verbose)
-                # self.grid_options['columnDefs'] = colDefs
-                self.grid_options = Util.implicit_columnDefs(self.grid_data,
-                                                             self.grid_options,
-                                                             verbose=verbose)
+            self.grid_data, self.grid_options = Util.prepare_singleindex_df(self.grid_data,
+                                                                            self.grid_options,
+                                                                            index=self.index,
+                                                                            verbose=verbose)
 
         self.grid_options = Util.update_columnTypes(self.grid_options,
                                                     verbose=verbose)
-
-        # self.grid_data = self.correct_data(self.grid_data, self.index)
-        # print(self.grid_data.head(5))
-
-        # print('grid_options')
-        # print(self.grid_options)
 
         if self.css_rules is not None:
             self.css_rules = Util.build_css_rules(self.css_rules)

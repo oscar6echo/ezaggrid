@@ -20,24 +20,6 @@ class Util:
 
         return obj
 
-    # def strip_comments(code):
-    #     if code.startswith('function'):
-    #         print(code)
-    #     lines = code.split('\n')
-    #     if code.startswith('function'):
-    #         print(lines)
-    #     lines = [e.strip() for e in lines]
-    #     if code.startswith('function'):
-    #         print(lines)
-    #     lines = [e for e in lines if not e.startswith('//')]
-    #     if code.startswith('function'):
-    #         print(lines)
-    #     code = '\n'.join(lines)
-    #     if code.startswith('function'):
-    #         print(code)
-
-    #     return code
-
     @staticmethod
     def strip_comments(code):
         lines = code.split('\n')
@@ -56,7 +38,6 @@ class Util:
 
     @staticmethod
     def sanitize_struct(e):
-        #     print('\n', type(e), '\n', e)
         if isinstance(e, list):
             return [Util.sanitize_struct(sub_e) for sub_e in e]
         elif isinstance(e, dict):
@@ -67,23 +48,151 @@ class Util:
             return e
 
     @staticmethod
-    def is_multiindex_df(data):
-        if isinstance(data, pd.core.frame.DataFrame):
-            is_row = isinstance(data.index, pd.core.indexes.multi.MultiIndex)
-            is_col = isinstance(data.columns, pd.core.indexes.multi.MultiIndex)
-            if is_row or is_col:
-                return True
-        return False
-
-    @staticmethod
     def is_df(data):
         if isinstance(data, pd.core.frame.DataFrame):
             return True
         return False
 
     @staticmethod
+    def is_multiindex_row_df(df):
+        if Util.is_df(df):
+            if isinstance(df.index, pd.core.indexes.multi.MultiIndex):
+                return True
+        return False
+
+    @staticmethod
+    def is_multiindex_col_df(df):
+        if isinstance(df, pd.core.frame.DataFrame):
+            if isinstance(df.columns, pd.core.indexes.multi.MultiIndex):
+                return True
+        return False
+
+    @staticmethod
+    def is_multiindex_df(df):
+        if Util.is_multiindex_row_df(df) or Util.is_multiindex_col_df(df):
+            return True
+        return False
+
+    @staticmethod
+    def build_colDefs_for_si_cols(df, verbose=False):
+        colDefs = []
+        for c in df.columns:
+            dic = {}
+            col = df[c]
+            field = col.name
+            header_name = field.title()
+            if col.dtype.kind in 'O':
+                # string
+                dic['field'] = field
+                dic['type'] = 'textColumn'
+                dic['headerName'] = header_name
+            if col.dtype.kind in 'ifc':
+                # number
+                dic['field'] = field
+                dic['type'] = 'numberColumn'
+                dic['headerName'] = header_name
+            if col.dtype.kind in 'M':
+                # date
+                dic['field'] = field
+                dic['type'] = 'dateColumn'
+                dic['headerName'] = header_name
+            colDefs.append(dic)
+        return colDefs
+
+    @staticmethod
+    def build_colDefs_for_mi_cols(df):
+        """
+        create agGrid columnDefs dict for column grouping
+        from multiindex dataframe columns
+        """
+        # utility
+        def get_idx(s, x):
+            li_headerName = [e['colName'] for e in s]
+            if x not in li_headerName:
+                return -1
+            else:
+                return li_headerName.index(x)
+
+        mindexcol = df.columns
+        li_idx_col = mindexcol.tolist()
+        s = []
+        for levels in li_idx_col:
+            col = df.loc[:, levels]
+            L = len(levels)
+            s2 = s
+            flat_field = None
+            for k, e in enumerate(levels):
+                if flat_field:
+                    flat_field = flat_field + '-' + e
+                else:
+                    flat_field = e
+                if k < L - 1:
+                    i = get_idx(s2, e)
+                    if i < 0:
+                        new_e = {'colName': e,
+                                 'headerName': e.title(),
+                                 'children': []}
+                        s2.append(new_e)
+                        i = len(s2) - 1
+                    s2 = s2[i]['children']
+                else:
+                    flat_field = flat_field.replace('.', '_')
+                    new_e = {'field': flat_field,
+                             'headerName': e.title()}
+                    if col.dtype.kind in 'O':
+                        # string
+                        new_e['type'] = 'textColumn'
+                    if col.dtype.kind in 'ifc':
+                        # number
+                        new_e['type'] = 'numberColumn'
+                    if col.dtype.kind in 'M':
+                        # date
+                        new_e['type'] = 'dateColumn'
+                    s2.append(new_e)
+        return s
+
+    @staticmethod
+    def build_colDefs_for_mi_rows(df, keep_multiindex):
+        """
+        create agGrid columnDefs dict for column grouping
+        from multiindex dataframe columns
+        """
+        mindexrow = df.index
+        s = []
+        for e in list(mindexrow.names):
+            new_e = {'field': e,
+                     'headerName': e.title(),
+                     'rowGroup': True}
+            if not keep_multiindex:
+                new_e['hide'] = True
+            s.append(new_e)
+        return s
+
+    @staticmethod
+    def flatten_mi_col_df(dfmi):
+        """
+        create flattend dataframe
+        multi index col ('a', 'b', 'c') turned to 'a-b-c'
+        """
+        df = dfmi.copy()
+        cols = ['-'.join(col).strip() for col in df.columns.values]
+        df.columns = cols
+        df.columns.name = 'UniqueCol'
+        return df
+
+    @staticmethod
+    def flatten_mi_row_df(dfmi):
+        """
+        create flattend dataframe
+        multi index row added as regular column
+        """
+        df = dfmi.reset_index()
+        return df
+
+    @staticmethod
     def prepare_multiindex_df(dfmi,
                               options,
+                              index=False,
                               keep_multiindex=False,
                               verbose=False):
         """
@@ -97,92 +206,62 @@ class Util:
           (existing columnDefs if any is replaced)
         """
 
-        def get_idx(s, x):
-            li_headerName = [e['colName'] for e in s]
-            if x not in li_headerName:
-                return -1
-            else:
-                return li_headerName.index(x)
+        df_data = dfmi
 
-        def build_colDefs_for_cols(df):
-            """
-            create agGrid columnDefs dict for column grouping
-            from multiindex dataframe columns
-            """
-            mindexcol = df.columns
-            li_idx_col = mindexcol.tolist()
-            s = []
-            for levels in li_idx_col:
-                col = df.loc[:, levels]
-                L = len(levels)
-                s2 = s
-                flat_field = None
-                for k, e in enumerate(levels):
-                    if flat_field:
-                        flat_field = flat_field + '-' + e
-                    else:
-                        flat_field = e
-                    if k < L - 1:
-                        i = get_idx(s2, e)
-                        if i < 0:
-                            new_e = {'colName': e,
-                                     'headerName': e.title(),
-                                     'children': []}
-                            s2.append(new_e)
-                            i = len(s2) - 1
-                        s2 = s2[i]['children']
-                    else:
-                        flat_field = flat_field.replace('.', '_')
-                        new_e = {'field': flat_field,
-                                 'headerName': e.title()}
-                        if col.dtype.kind in 'O':
-                            # string
-                            new_e['type'] = 'textColumn'
-                        if col.dtype.kind in 'ifc':
-                            # number
-                            new_e['type'] = 'numberColumn'
-                        if col.dtype.kind in 'M':
-                            # date
-                            new_e['type'] = 'dateColumn'
-                        s2.append(new_e)
-            return s
+        if index:
+            df_data = Util.add_index_as_col(df_data,
+                                            verbose=verbose)
 
-        def build_colDefs_for_rows(mindexrow, keep_multiindex):
-            """
-            create agGrid columnDefs dict for column grouping
-            from multiindex dataframe columns
-            """
-            s = []
-            for e in list(mindexrow.names):
-                new_e = {'field': e,
-                         'headerName': e.title(),
-                         'rowGroup': True}
-                if not keep_multiindex:
-                    new_e['hide'] = True
-                s.append(new_e)
-            return s
+        if Util.is_multiindex_col_df(df_data):
+            columnDefs_col = Util.build_colDefs_for_mi_cols(df_data)
+            df_data = Util.flatten_mi_col_df(df_data)
+        else:
+            columnDefs_col = Util.build_colDefs_for_si_cols(df_data)
 
-        def build_flattened_df(dfmi):
-            """
-            create flattend dataframe
-            multi index col ('a', 'b', 'c') turned to 'a-b-c'
-            multi index row added as regular column
-            """
-            df = dfmi.copy()
-            cols = ['-'.join(col).strip() for col in df.columns.values]
-            df.columns = cols
-            df.columns.name = 'UniqueCol'
-            df = df.reset_index()
-            return df
+        if Util.is_multiindex_row_df(df_data):
+            columnDefs_row = Util.build_colDefs_for_mi_rows(df_data,
+                                                            keep_multiindex)
+            df_data = Util.flatten_mi_row_df(df_data)
+        else:
+            columnDefs_row = []
+            if index:
+                df_data = Util.add_index_as_col(df_data,
+                                                verbose=verbose)
 
-        columnDefs_row = build_colDefs_for_rows(dfmi.index, keep_multiindex)
-        columnDefs_col = build_colDefs_for_cols(dfmi)
         new_columnDefs = columnDefs_row + columnDefs_col
 
         options['columnDefs'] = new_columnDefs
         options['enableRowGroup'] = True
 
-        data = build_flattened_df(dfmi)
+        return df_data, options
+
+    @staticmethod
+    def prepare_singleindex_df(data,
+                               options,
+                               index=False,
+                               verbose=False):
+        """
+        Prepare single index dataframe (data) and options
+        To do that the dataframe is modified
+        + dots are replaced by underscore in column names
+        + index is added in columns if requested
+        + types are inferred from column types
+        """
+
+        data = Util.correct_df_col_name(data,
+                                        verbose=verbose)
+        if index:
+            data = Util.add_index_as_col(data,
+                                         verbose=verbose)
+
+        if 'columnDefs' in options:
+            options = Util.update_columnDefs(data,
+                                             options,
+                                             verbose=verbose)
+        else:
+            options = Util.implicit_columnDefs(data,
+                                               options,
+                                               verbose=verbose)
 
         return data, options
 
@@ -195,14 +274,12 @@ class Util:
             if verbose:
                 print('In dataframe column names "." are replaced by "_".', end=' ')
                 print('Make sure columDefs match.')
-            # print(data.columns)
-            # print(new_col)
             data.columns = new_col
 
         return data
 
     @staticmethod
-    def add_index_df(data, verbose=False):
+    def add_index_as_col(data, verbose=False):
         data = data.reset_index()
         return data
 
@@ -229,28 +306,7 @@ class Util:
 
     @staticmethod
     def implicit_columnDefs(df, grid_options, verbose=False):
-        colDefs = []
-        for c in df.columns:
-            dic = {}
-            col = df[c]
-            field = col.name
-            header_name = field.title()
-            if col.dtype.kind in 'O':
-                # string
-                dic['field'] = field
-                dic['type'] = 'textColumn'
-                dic['headerName'] = header_name
-            if col.dtype.kind in 'ifc':
-                # number
-                dic['field'] = field
-                dic['type'] = 'numberColumn'
-                dic['headerName'] = header_name
-            if col.dtype.kind in 'M':
-                # date
-                dic['field'] = field
-                dic['type'] = 'dateColumn'
-                dic['headerName'] = header_name
-            colDefs.append(dic)
+        colDefs = Util.build_colDefs_for_si_cols(df, verbose=verbose)
         grid_options['columnDefs'] = colDefs
         return grid_options
 
