@@ -20,7 +20,8 @@ from setuptools import setup, find_packages
 from distutils.util import convert_path
 from pip.req import parse_requirements
 
-module = 'ezaggrid'
+packages = find_packages()
+module = packages[0]
 
 here = path.abspath(path.dirname(__file__))
 
@@ -30,7 +31,7 @@ with open(ver_path) as ver_file:
     exec(ver_file.read(), meta_ns)
 
 name = meta_ns['__name__']
-packages = meta_ns['__packages__']
+packages = packages
 version = meta_ns['__version__']
 description = meta_ns['__description__']
 author = meta_ns['__author__']
