@@ -125,7 +125,10 @@ ag = AgGrid(# dataframe or list of dict of data items
             # must be stored in ~/.ag_grid_license
             license=get_license(),
             # iframe boolean to encapsulate js in iframe - default=False
-            iframe=False)
+            iframe=False,
+            # hide_grid boolean to hide grid - default=False - may be useful to only show export buttons
+            hide_grid=False,
+            )
 
 # display
 ag.show()

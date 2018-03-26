@@ -27,6 +27,7 @@ class Params:
                  grid_data=None,
                  grid_options=None,
                  license=None,
+                 hide_grid=False,
                  verbose=False,
                  **kwargs):
         """
@@ -47,6 +48,7 @@ class Params:
         self.grid_data = copy(grid_data)
         self.grid_options = copy(grid_options)
         self.license = license
+        self.hide_grid = hide_grid
 
         # if not self.widthIframe:
         #     self.widthIframe = self.width + 2 * self.borderPx
@@ -95,8 +97,11 @@ class Params:
         msg = 'export_csv must be a boolean'
         assert isinstance(self.export_csv, bool), msg
 
-        msg = 'exportExport must be a boolean'
+        msg = 'export_excel must be a boolean'
         assert isinstance(self.export_excel, bool), msg
+
+        msg = 'hide_grid must be a boolean'
+        assert isinstance(self.hide_grid, bool), msg
 
         if self.css_rules is not None:
             msg = 'css_rules must be a string'

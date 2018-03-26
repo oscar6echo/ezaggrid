@@ -26,6 +26,7 @@ class AgGrid:
                  grid_options=None,
                  license=None,
                  iframe=False,
+                 hide_grid=False,
                  verbose=False):
 
         dic = {'width': width,
@@ -41,6 +42,7 @@ class AgGrid:
                'grid_data': grid_data,
                'grid_options': grid_options,
                'license': license,
+               'hide_grid': hide_grid,
                'verbose': verbose
                }
         dic = { k: v for k, v in dic.items() if v is not None}

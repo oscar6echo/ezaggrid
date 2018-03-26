@@ -64,6 +64,9 @@
     let gridDiv = document.createElement('div');
     gridDiv.style.width = width;
     gridDiv.style.height = height;
+    {-% if data.hide_grid %-}
+    gridDiv.style.display = 'none';
+    {-% endif %-}
     gridDiv.className = theme;
     container.appendChild(gridDiv);
 
