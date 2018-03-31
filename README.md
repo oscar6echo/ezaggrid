@@ -50,7 +50,7 @@ df = pd.read_json(url)
 The [gridOptions](https://www.ag-grid.com/javascript-grid-reference-overview/#grid-options) must be input as a dictionary.  
 The only field that must not be set is `rowData` as data comes from the dataframe.
 
-For help converting a javascript gridOption object (from the official [ag-grid documentation](https://www.ag-grid.com/documentation-main/documentation.php) of a web example) to a Python dictionary, check out the [helper_convert_gridOptions_js_to_python]() notebook.
+For help converting a javascript gridOption object (from the official [ag-grid documentation](https://www.ag-grid.com/documentation-main/documentation.php) of a web example) to a Python dictionary, check out the [helper_convert_gridOptions_js_to_python](https://github.com/oscar6echo/ezaggrid/blob/master/notebooks/helper_convert_gridOptions_js_to_python.ipynb) notebook.
 
 ```Python
 # See ag-grid documentation
