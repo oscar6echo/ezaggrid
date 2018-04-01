@@ -26,6 +26,7 @@ class Params:
                  keep_multiindex=True,
                  grid_data=None,
                  grid_options=None,
+                 grid_options_multi=None,
                  license=None,
                  hide_grid=False,
                  verbose=False,
@@ -45,8 +46,10 @@ class Params:
         self.implicit_col_defs = implicit_col_defs
         self.index = index
         self.keep_multiindex = keep_multiindex
-        self.grid_data = copy(grid_data)
+        self.grid_data_in = copy(grid_data)
+        self.grid_data = None
         self.grid_options = copy(grid_options)
+        self.grid_options_multi = copy(grid_options_multi)
         self.license = license
         self.hide_grid = hide_grid
 
@@ -58,29 +61,79 @@ class Params:
 
         self.valid = self.check(verbose=verbose)
 
-        if Util.is_multiindex_df(self.grid_data):
-            self.grid_data, self.grid_options = Util.prepare_multiindex_df(self.grid_data,
-                                                                           self.grid_options,
-                                                                           index=self.index,
-                                                                           keep_multiindex=self.keep_multiindex,
-                                                                           verbose=verbose)
-        elif Util.is_df(self.grid_data):
-            self.grid_data, self.grid_options = Util.prepare_singleindex_df(self.grid_data,
-                                                                            self.grid_options,
-                                                                            index=self.index,
-                                                                            verbose=verbose)
-
-        self.grid_options = Util.update_columnTypes(self.grid_options,
-                                                    verbose=verbose)
-
         if self.css_rules is not None:
             self.css_rules = Util.build_css_rules(self.css_rules)
 
         if self.license is not None:
             self.license = Util.encode_b64(self.license)
 
+        self.is_grid_options_multi = True if grid_options_multi is not None else False
+        self.is_grid_options_multi = int(self.is_grid_options_multi)
+
+        if self.is_grid_options_multi:
+            grid_options_multi_2 = []
+            for name, options in self.grid_options_multi:
+                self.grid_data, options_2 = self.preprocess_input(
+                    self.grid_data_in,
+                    options,
+                    index=self.index,
+                    keep_multiindex=self.keep_multiindex,
+                    verbose=verbose)
+                grid_options_multi_2.append((name, options_2))
+            self.grid_options_multi = grid_options_multi_2
+
+        else:
+            self.grid_data, self.grid_options = self.preprocess_input(
+                self.grid_data_in,
+                self.grid_options,
+                index=self.index,
+                keep_multiindex=self.keep_multiindex,
+                verbose=verbose)
+
+
         self.grid_data_json = Util.build_data(self.grid_data)
-        self.grid_options_json = Util.build_options(self.grid_options)
+
+        if self.is_grid_options_multi:
+            self.grid_options_multi_json = Util.build_options({'data': self.grid_options_multi})
+            # self.grid_options_multi_json = Util.build_options(self.grid_options_multi)
+            # print(self.grid_options_multi_json)
+        else:
+            self.grid_options_json = Util.build_options(self.grid_options)
+            # print(self.grid_options_json)
+
+
+
+    def preprocess_input(self,
+                         grid_data,
+                         grid_options,
+                         index,
+                         keep_multiindex,
+                         verbose=False):
+        """
+        """
+        if Util.is_multiindex_df(grid_data):
+            grid_data_2, grid_options_2 = Util.prepare_multiindex_df(
+                grid_data,
+                grid_options,
+                index=index,
+                keep_multiindex=keep_multiindex,
+                verbose=verbose)
+
+        elif Util.is_df(grid_data):
+            grid_data_2, grid_options_2 = Util.prepare_singleindex_df(
+                grid_data,
+                grid_options,
+                index=index,
+                verbose=verbose)
+
+        else:
+            grid_options_2 = grid_options
+
+        grid_options_2 = Util.update_columnTypes(
+            grid_options_2,
+            verbose=verbose)
+
+        return grid_data_2, grid_options_2
 
     def check(self, verbose=False):
         """
@@ -116,11 +169,32 @@ class Params:
         assert self.theme in li_theme, msg
 
         msg = 'grid_data must be a dict or a dataframe'
-        assert isinstance(self.grid_data, (list, pd.core.frame.DataFrame)), msg
-        if isinstance(self.grid_data, list):
-            for e in self.grid_data:
-                msg = 'each element of grid_data must be a dict'
+        assert isinstance(self.grid_data_in, (list, pd.core.frame.DataFrame)), msg
+        if isinstance(self.grid_data_in, list):
+            msg = 'each element of grid_data must be a dict'
+            for e in self.grid_data_in:
                 assert isinstance(e, dict), msg
+
+        msg = 'both grid_options and grid_options_multi cannot be set'
+        assert (self.grid_options is None) or (self.grid_options_multi is None), msg
+
+        msg = 'one exactly of grid_options or grid_options_multi mut be set'
+        assert not((self.grid_options is None) and (self.grid_options_multi is None)), msg
+
+        if self.grid_options is not None:
+            msg = 'grid_options must be a dict'
+            assert isinstance(self.grid_options, dict), msg
+
+        if self.grid_options_multi is not None:
+            msg = 'grid_options_multi must be a list or tuple'
+            assert isinstance(self.grid_options_multi, (list, tuple)), msg
+            msg1 = 'each element of grid_options_multi must be a list or tuple of length 2'
+            msg2 = 'in each grid_options_multi element of length 2, the first one must be a string'
+            msg3 = 'in each grid_options_multi element of length 3, the second one must be a dict'
+            for e in self.grid_options_multi:
+                assert isinstance(e, (list, tuple)) and len(e) == 2, msg1
+                assert isinstance(e[0], str), msg2
+                assert isinstance(e[1], dict), msg3
 
         if verbose:
             print('data is valid')

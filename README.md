@@ -4,14 +4,14 @@
 **ezaggrid** (meaning 'easy ag-grid') is a Python package thin wrapping the excellent [ag-grid](https://www.ag-grid.com/) JavaScript library.  
 Its goal is to make it ag-grid an easy option for [pandas dataframe](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) rendering in the Jupyter notebook.
 
-![](img/licecap_ezaggrid.png)
+![](img/licecap_ezaggrid2.png)
 
 ## 1 - Install
 
 From terminal
 
 ```bash
-pip install ezaggrid
+$ pip install ezaggrid
 ```
 
 
@@ -33,6 +33,7 @@ See the demo notebooks
 + [demo_ezaggrid_pagination](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_pagination.ipynb)
 + [demo_ezaggrid_pivoting](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_pivoting.ipynb)
 + [demo_ezaggrid_quickfilter](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_quickfilter.ipynb)
++ [demo_ezaggrid_several_gridoptions](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_several_gridoptions.ipynb)
 + [demo_ezaggrid_status_bar](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_status_bar.ipynb)
 + [demo_ezaggrid_tool_panel](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_tool_panel.ipynb)
 + [demo_ezaggrid_multiindex_dataframe](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_multiindex_dataframe.ipynb)
@@ -97,8 +98,11 @@ To display a the data as as ag-grid
 # create object
 ag = AgGrid(# dataframe or list of dict of data items
             grid_data=df_data,
-            # dictionary of gridOptions- from ag-grid documentation
+            # dictionary of gridOptions - from ag-grid documentation
             grid_options=grid_options,
+            # list of tuples (name, gridOptions) - dropdown menu to select from
+            # NOTE: grid_options xor grid_options_multi must be set
+            grid_options_multi=[('name A', grid_options_A), ('name B', grid_options_B)],
             # add css rules as a string - default=None
             css_rules=None,
             # width of containter in px
@@ -157,7 +161,7 @@ See the [demo_ezaggrid_multiindex_dataframe](https://nbviewer.jupyter.org/github
 
 ### 2.2.4 - Export data and options
 
-Both the `grid_data` and `grid_options` may be slightly modified upon AgGrid instance creation. To get back their transformed value:
+Both the `grid_data` and `grid_options`, or `grid_options_multi`, may be slightly modified upon AgGrid instance creation. To get back their transformed value:
 
 
 ```Python
@@ -166,6 +170,9 @@ updated_grid_data = ag.export_data()
 
 # export grid_options
 updated_grid_options = ag.export_options()
+
+# export grid_options_multi
+updated_grid_options = ag.export_options_multi()
 ```
 
 You might need it to tamper the options further.  

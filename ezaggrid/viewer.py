@@ -24,6 +24,7 @@ class AgGrid:
                  keep_multiindex=None,
                  grid_data=None,
                  grid_options=None,
+                 grid_options_multi=None,
                  license=None,
                  iframe=False,
                  hide_grid=False,
@@ -41,6 +42,7 @@ class AgGrid:
                'implicit_col_defs': implicit_col_defs,
                'grid_data': grid_data,
                'grid_options': grid_options,
+               'grid_options_multi': grid_options_multi,
                'license': license,
                'hide_grid': hide_grid,
                'verbose': verbose
@@ -65,3 +67,6 @@ class AgGrid:
 
     def export_options(self):
         return self.params.grid_options
+
+    def export_options_multi(self):
+        return self.params.grid_options_multi

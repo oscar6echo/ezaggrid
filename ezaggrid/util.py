@@ -38,13 +38,20 @@ class Util:
 
     @staticmethod
     def sanitize_struct(e):
-        if isinstance(e, list):
+        # print('\nNEW')
+        if isinstance(e, (list, tuple)):
+            # print('list, tuple')
             return [Util.sanitize_struct(sub_e) for sub_e in e]
         elif isinstance(e, dict):
+            # print('dict')
             return {k: Util.sanitize_struct(v) for k, v in e.items()}
         elif isinstance(e, str):
+            # print('str')
+            # print(e)
             return Util.sanitize_str(e)
         else:
+            # print('native')
+            # print(e)
             return e
 
     @staticmethod

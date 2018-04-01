@@ -10,7 +10,11 @@
     let height = '__$data.height$__'+'px';
     let theme = '__$data.theme$__';
     let gridDataJson = `__$data.grid_data_json$__`;
+
+    let isGridOptionsMulti = __$data.is_grid_options_multi$__;
     let gridOptionsJson = `__$data.grid_options_json$__`;
+    let gridOptionsMultiJson = `__$data.grid_options_multi_json$__`;
+
 
     {-% if data.css_rules is defined %-}
     let css = __$data.css_rules$__;
@@ -21,9 +25,7 @@
     var style = document.createElement('style');
     document.head.appendChild(style);
     let sheet = style.sheet;
-    
-    
-    
+
     // MASTER CONTAINER
     let container = document.getElementById(`container-${uuid}`);
     
@@ -50,6 +52,13 @@
     buttonExportCsv.id = `export-csv-${uuid}`;
     buttonExportCsv.innerHTML = 'Export to CSV'
     container.appendChild(buttonExportCsv);
+
+    sheet.insertRule(
+        `#export-csv-${uuid} { 
+            margin-left: 10px;;
+        }`,
+        0
+    );
     {-% endif %-}
     
     // EXPORT EXCEL
@@ -58,6 +67,28 @@
     buttonExportExcel.id = `export-excel-${uuid}`;
     buttonExportExcel.innerHTML = 'Export to Excel'
     container.appendChild(buttonExportExcel);
+
+    sheet.insertRule(
+        `#export-excel-${uuid} { 
+            margin-left: 10px;;
+        }`,
+        0
+    );
+    {-% endif %-}
+    
+    // DROPDOWN MENU
+    {-% if data.is_grid_options_multi %-}
+    let dropdownMulti = document.createElement('select');
+    dropdownMulti.id = `dropdown-multi-${uuid}`;
+    container.appendChild(dropdownMulti);
+
+    sheet.insertRule(
+        `#dropdown-multi-${uuid} { 
+            margin-left: 10px;;
+            width: 300px;;
+        }`,
+        0
+    );
     {-% endif %-}
     
     // CONTAINER AG GRID
@@ -69,6 +100,14 @@
     {-% endif %-}
     gridDiv.className = theme;
     container.appendChild(gridDiv);
+
+
+    // INJECT USER CSS
+    {-% if data.css_rules is defined %-}
+    for (let rule of css){
+        sheet.insertRule(`${rule}`, 0);
+    } 
+    {-% endif %-}
 
 
 
@@ -83,67 +122,126 @@
     ], function (agGrid, d3) {
             console.log("start in require");
 
+
+            // DISPLAY FUNCTION
+            let buildAgGrid = function (agGrid, gridDiv, gridOpts){
+
+                // EMPTY DIV
+                gridDiv.innerHTML = '';
+
+                // CALL AG-GRID
+                new agGrid.Grid(gridDiv, gridOpts);
+                gridOpts.api.doLayout();
+        
+                // QUICK FILTER
+                {-% if data.quick_filter %-}
+                let onQuickfilterTextBoxChanged = function() {
+                    let text = document.getElementById(`quickFilter-${uuid}`).value;
+                    gridOpts.api.setQuickFilter(text);
+                }
+                quickFilter.oninput = onQuickfilterTextBoxChanged;
+                {-% endif %-}
+                
+                // EXPORT CSV
+                {-% if data.export_csv %-}
+                let onButtonExportCsv = function() {
+                    console.log('export to csv');
+                    helpers.exportToCsv(gridOpts);
+                }
+                buttonExportCsv.onclick = onButtonExportCsv;
+                {-% endif %-}
+                
+                // EXPORT EXCEL
+                {-% if data.export_excel %-}
+                let onButtonExportExcel = function() {
+                    console.log('export to excel');
+                    helpers.exportToExcel(gridOpts);
+                }
+                buttonExportExcel.onclick = onButtonExportExcel;
+                {-% endif %-}
+        
+        
+                // DEBUG
+                window.d3 = d3;
+                window.gridDiv = gridDiv;
+                window.JSONfunc = JSONfunc;
+                window.gridData = gridData;
+                window.gridOpts = gridOpts;
+            };
+        
+        
+            // BUILD DROPDOWN MENU AND DISPLAY IN CASE OF MULTI GRIDOPTIONS
+            let buildGridOptionDropdown = function(agGrid, gridDiv, dropdownMulti, gridOptionsMulti, gridData){
+                let gridOptionsMultiObj = {};
+        
+                for (let [name, gridOptions] of gridOptionsMulti) { 
+                    let option = document.createElement('option');
+                    option.value = name;
+                    option.text = name;
+                    dropdownMulti.add(option);
+
+                    gridOptions.rowData = gridData;
+                    gridOptionsMultiObj[name] = gridOptions;
+                };
+                
+                let displayGrid = function(name, gridOptionsMultiObj, agGrid, gridDiv) {
+                    let gridOptions = gridOptionsMultiObj[name];
+                    buildAgGrid(agGrid, gridDiv, gridOptions);
+                }
+                
+                dropdownMulti.onchange = function(){
+                    let name = dropdownMulti.value;
+                    console.log(name);
+                    displayGrid(name, gridOptionsMultiObj, agGrid, gridDiv);
+                }
+                
+                let nameFirst = gridOptionsMulti[0][0];
+                console.log('init gridOptions displayed: '+nameFirst);
+                
+                displayGrid(nameFirst, gridOptionsMultiObj, agGrid, gridDiv);
+
+                // DEBUG
+                window.gridOptionsMultiObj = gridOptionsMultiObj;
+            };
+        
+        
+
+
+            // LICENCE
             {-% if data.license %-} 
             agGrid.LicenseManager.setLicenseKey(atob('__$data.license$__'));
             {-% endif %-}
 
+            // UTILITIES
             {-% include 'helpers.js' %-}
             {-% include 'json.js' %-}
 
+            // PARSE DATA
             let gridData = JSONfunc.parse(gridDataJson);
-            let gridOptions = JSONfunc.parse(gridOptionsJson);
 
-            {-% if data.css_rules is defined %-}
-            for (let rule of css){
-                sheet.insertRule(`${rule}`, 0);
-            } 
-            {-% endif %-}
-
-            
-            // gridOptions.pinnedTopRowData = [gridData[0]];
-            // gridOptions.pinnedBottomRowData = [gridData[gridData.length-1]];
-            // gridData = gridData.slice(1, gridData.length-1);
-            gridOptions.rowData = gridData;
-
-            new agGrid.Grid(gridDiv, gridOptions);
-
-            gridOptions.api.doLayout();
-
-            // QUICK FILTER
-            {-% if data.quick_filter %-}
-            let onQuickfilterTextBoxChanged = function() {
-                let text = document.getElementById(`quickFilter-${uuid}`).value;
-                console.log(text);
-                gridOptions.api.setQuickFilter(text);
+            if (isGridOptionsMulti){
+                console.log('MULTI');
+                // PARSE OPTIONS MULTI
+                let gridOptionsMulti = JSONfunc.parse(gridOptionsMultiJson).data;
+                window.gridOptionsMulti = gridOptionsMulti;
+                // BUILD DROPDOWN MENU AND DISPLAY FIRST (DEFAULT) GRID OPTIONS
+                buildGridOptionDropdown(agGrid, gridDiv, dropdownMulti, gridOptionsMulti, gridData);
             }
-            quickFilter.oninput = onQuickfilterTextBoxChanged;
-            {-% endif %-}
-            
-            // EXPORT CSV
-            {-% if data.export_csv %-}
-            let onButtonExportCsv = function() {
-                console.log('export to csv');
-                helpers.exportToCsv(gridOptions);
+            else {
+                console.log('MONO');
+                // PARSE OPTIONS
+                let gridOptions = JSONfunc.parse(gridOptionsJson);
+                // ADD DATA TO OPTIONS
+                gridOptions.rowData = gridData;
+                // BUILD
+                buildAgGrid(agGrid, gridDiv, gridOptions);
             }
-            buttonExportCsv.onclick = onButtonExportCsv;
-            {-% endif %-}
-            
-            // EXPORT EXCEL
-            {-% if data.export_excel %-}
-            let onButtonExportExcel = function() {
-                console.log('export to excel');
-                helpers.exportToExcel(gridOptions);
-            }
-            buttonExportExcel.onclick = onButtonExportExcel;
-            {-% endif %-}
+
+            console.log('END INIT');
 
 
-            // DEBUG
-            window.d3 = d3;
-            window.gridDiv = gridDiv;
-            window.JSONfunc = JSONfunc;
-            window.gridData = gridData;
-            window.gridOptions = gridOptions;
+
+
         });
 
 })();
