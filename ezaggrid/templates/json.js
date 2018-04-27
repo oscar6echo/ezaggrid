@@ -1,5 +1,5 @@
 
-var JSONfunc = {};
+let JSONfunc = {};
 
 JSONfunc.stringify = function (obj) {
 	return JSON.stringify(obj, function (key, value) {
@@ -14,8 +14,8 @@ JSONfunc.parse = function (str) {
 
 		if (typeof value != 'string') return value;
 
-		var valueCompact = value.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ');
-		var r;
+		let valueCompact = value.replace(/\r?\n|\r/g, '').replace(/\s+/g, ' ');
+		let r;
 		// console.log(valueCompact);
 		if (valueCompact.substring(0, 8) == 'function') {
 			r = eval('(' + value + ')');

@@ -2,7 +2,7 @@
 __name__ = 'ezaggrid'
 name_url = __name__.replace('_', '-')
 
-__version__ = '0.2.3'
+__version__ = '0.2.4'
 __description__ = 'display dataframe in ag-grid'
 __long_description__ = 'See repo README'
 __author__ = 'oscar6echo'

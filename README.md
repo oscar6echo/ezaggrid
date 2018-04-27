@@ -29,6 +29,7 @@ See the demo notebooks
 + [demo_ezaggrid_column_headers](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_headers.ipynb)
 + [demo_ezaggrid_column_resize](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_resize.ipynb)
 + [demo_ezaggrid_column_row_sorting](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_column_row_sorting.ipynb)
++ [demo_ezaggrid_compress_data](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_compress_data.ipynb)
 + [demo_ezaggrid_export_csv_excel](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_export_csv_excel.ipynb)
 + [demo_ezaggrid_pagination](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_pagination.ipynb)
 + [demo_ezaggrid_pivoting](https://nbviewer.jupyter.org/github/oscar6echo/ezaggrid/blob/master/notebooks/demo_ezaggrid_pivoting.ipynb)
@@ -132,6 +133,8 @@ ag = AgGrid(# dataframe or list of dict of data items
             iframe=False,
             # hide_grid boolean to hide grid - default=False - may be useful to only show export buttons
             hide_grid=False,
+            # compress_data boolean to gunzip then convert to base64 json data - default=False
+            compress_data=False,
             )
 
 # display

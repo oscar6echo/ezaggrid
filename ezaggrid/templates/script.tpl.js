@@ -10,6 +10,8 @@
     let height = '__$data.height$__'+'px';
     let theme = '__$data.theme$__';
     let gridDataJson = `__$data.grid_data_json$__`;
+    console.log('gridDataJson');
+    console.log(gridDataJson);
 
     let isGridOptionsMulti = __$data.is_grid_options_multi$__;
     let gridOptionsJson = `__$data.grid_options_json$__`;
@@ -111,16 +113,29 @@
 
 
 
+    let urlAggridEnterprise = 'https://unpkg.com/ag-grid-enterprise@16.0.0/dist/ag-grid-enterprise.min.js';
+    let urlAggridFree = 'https://www.ag-grid.com/dist/ag-grid/ag-grid.js';
+    let urlD3 = 'https://d3js.org/d3-format.v1.min.js';
+    let urlPako = 'https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.6/pako.js';
 
     require([
-        {-% if data.license %-} 
-        "https://unpkg.com/ag-grid-enterprise@16.0.0/dist/ag-grid-enterprise.min.js",
+        {-% if data.license %-}
+        urlAggridEnterprise,
         {-% else %-} 
-        "https://www.ag-grid.com/dist/ag-grid/ag-grid.js",
+        urlAggridFree,
         {-% endif %-}
-        "https://d3js.org/d3-format.v1.min.js"
-    ], function (agGrid, d3) {
+        urlD3,
+        urlPako
+    ], function (agGrid, d3, pako) {
             console.log("start in require");
+
+            console.log('d3');
+            window.d3 = d3;
+            console.log(d3);
+
+            console.log('pako');
+            window.pako = pako;
+            console.log(pako);
 
 
             // DISPLAY FUNCTION
@@ -215,9 +230,19 @@
             // UTILITIES
             {-% include 'helpers.js' %-}
             {-% include 'json.js' %-}
+            {-% include 'compress.js' %-}
 
             // PARSE DATA
+
+            console.log('b0');
+            {-% if data.compress_data %-}
+            console.log('b1');
+            let gridData = JSONfunc.parse(gzip.uncompressBase64ToStr(gridDataJson, 9));
+            {-% else %-}
             let gridData = JSONfunc.parse(gridDataJson);
+            {-% endif %-}
+            console.log('b00');
+    
 
             if (isGridOptionsMulti){
                 console.log('MULTI');

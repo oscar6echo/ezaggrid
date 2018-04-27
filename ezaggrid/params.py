@@ -1,7 +1,9 @@
 
 import random
-import simplejson as json
+import gzip
+import base64
 
+import simplejson as json
 import pandas as pd
 
 from copy import deepcopy as copy
@@ -29,6 +31,7 @@ class Params:
                  grid_options_multi=None,
                  license=None,
                  hide_grid=False,
+                 compress_data=False,
                  verbose=False,
                  **kwargs):
         """
@@ -52,6 +55,7 @@ class Params:
         self.grid_options_multi = copy(grid_options_multi)
         self.license = license
         self.hide_grid = hide_grid
+        self.compress_data = compress_data
 
         # if not self.widthIframe:
         #     self.widthIframe = self.width + 2 * self.borderPx
@@ -90,8 +94,14 @@ class Params:
                 keep_multiindex=self.keep_multiindex,
                 verbose=verbose)
 
-
         self.grid_data_json = Util.build_data(self.grid_data)
+        if self.compress_data:
+            json_bytes = self.grid_data_json.encode('utf-8')
+            compressed = gzip.compress(json_bytes,
+                                       compresslevel=9)
+            b64_bytes = base64.encodebytes(compressed)
+            b64_str = b64_bytes.decode('utf-8')
+            self.grid_data_json = b64_str
 
         if self.is_grid_options_multi:
             self.grid_options_multi_json = Util.build_options({'data': self.grid_options_multi})
@@ -100,8 +110,6 @@ class Params:
         else:
             self.grid_options_json = Util.build_options(self.grid_options)
             # print(self.grid_options_json)
-
-
 
     def preprocess_input(self,
                          grid_data,
