@@ -2,7 +2,7 @@
 __name__ = 'ezaggrid'
 name_url = __name__.replace('_', '-')
 
-__version__ = '0.2.4'
+__version__ = '0.2.5'
 __description__ = 'display dataframe in ag-grid'
 __long_description__ = 'See repo README'
 __author__ = 'oscar6echo'
@@ -27,7 +27,7 @@ __package_data__ = {
          'templates/script.tpl.js'
          'templates/json.js'
          'templates/helpers.js'
-        ],
+         ],
 }
 
 __zip_safe__ = False
