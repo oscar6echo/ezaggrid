@@ -1,6 +1,6 @@
 
 .DS_Store
-vscode/
+.vscode/
 
 __pycache__/
 *.py[cod]

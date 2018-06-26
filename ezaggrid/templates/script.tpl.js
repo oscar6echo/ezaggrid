@@ -113,7 +113,7 @@
 
 
 
-    let urlAggridEnterprise = 'https://unpkg.com/ag-grid-enterprise@16.0.0/dist/ag-grid-enterprise.min.js';
+    let urlAggridEnterprise = 'https://unpkg.com/ag-grid-enterprise@18.0.1/dist/ag-grid-enterprise.min.js';
     let urlAggridFree = 'https://www.ag-grid.com/dist/ag-grid/ag-grid.js';
     let urlD3 = 'https://d3js.org/d3-format.v1.min.js';
     let urlPako = 'https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.6/pako.js';
