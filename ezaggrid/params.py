@@ -147,10 +147,20 @@ class Params:
         """
         """
         msg = 'width must be a number of pixels'
-        assert isinstance(self.width, int), msg
+        if isinstance(self.width, str):
+            msg = 'width must end with "px" or "%"'
+            assert self.width.endswith('px') or self.width.endswith('%'), msg
+        else:
+            msg = 'width must be a string or an int'
+            assert isinstance(self.width, int), msg
 
         msg = 'height must be a number of pixels'
-        assert isinstance(self.height, int), msg
+        if isinstance(self.height, str):
+            msg = 'height must end with "px" or "%"'
+            assert self.height.endswith('px') or self.height.endswith('%'), msg
+        else:
+            msg = 'height must be a string or an int'
+            assert isinstance(self.height, int), msg
 
         msg = 'quick_filter must be a boolean'
         assert isinstance(self.quick_filter, bool), msg
