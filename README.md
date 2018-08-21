@@ -1,6 +1,12 @@
 
 # ezaggrid
 
+# IMPORTANT
+> 20aug18: **ezaggrid** will not be improved further. Instead I strongly encourage to use **ipyaggrid**, which is more powerful and crucially allows bidirectional communication Python-JavaScript, while **ezaggrid** can only do Python-to-JavaScript.  
+To learn more checkout: (1) the medium article [Harnessing the power of ag-Grid](https://medium.com/@olivier.borderies/harnessing-the-power-of-ag-grid-in-jupyter-3ae27fb21012) in Jupyter and [ipyaggrid doc](http://dgothrek.gitlab.io/ipyaggrid/).
+
+
+
 **ezaggrid** (meaning 'easy ag-grid') is a Python package thin wrapping the excellent [ag-grid](https://www.ag-grid.com/) JavaScript library.  
 Its goal is to make it ag-grid an easy option for [pandas dataframe](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) rendering in the Jupyter notebook.
 
