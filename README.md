@@ -3,7 +3,7 @@
 
 # IMPORTANT
 > 20aug18: **ezaggrid** will not be improved further. Instead I strongly encourage to use **ipyaggrid**, which is more powerful and crucially allows bidirectional communication Python-JavaScript, while **ezaggrid** can only do Python-to-JavaScript.  
-To learn more checkout: (1) the medium article [Harnessing the power of ag-Grid](https://medium.com/@olivier.borderies/harnessing-the-power-of-ag-grid-in-jupyter-3ae27fb21012) in Jupyter and [ipyaggrid doc](http://dgothrek.gitlab.io/ipyaggrid/).
+To learn more check out: (1) the medium article [Harnessing the power of ag-Grid in Jupyter](https://medium.com/@olivier.borderies/harnessing-the-power-of-ag-grid-in-jupyter-3ae27fb21012) and (2) [ipyaggrid doc](http://dgothrek.gitlab.io/ipyaggrid/).
 
 
 
